@@ -181,3 +181,15 @@ Address:        127.0.0.1#53
 Name:   www.mypage.com
 Address: 35.171.8.231
 ```
+## Note:
+### Here’s how to configure your DNS settings on different operating systems:
+
+
+#### - Windows: Go to Control Panel > Network and Internet > Network and Sharing Center > Change adapter settings. Right-click your network connection, select Properties, then select Internet Protocol Version 4 (TCP/IPv4) or Version 6 (TCP/IPv6) and click Properties. Here, you can set your preferred DNS server.
+
+
+#### - MacOS: Go to System Preferences > Network, select your network interface, click Advanced, and go to the DNS tab. You can add your DNS server here.
+
+
+#### - Linux: This depends on your distribution and network manager, but typically you can edit /etc/resolv.conf directly or configure through network management tools (like NetworkManager) to add your DNS server.
+

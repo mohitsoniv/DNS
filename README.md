@@ -144,15 +144,13 @@ include "/etc/named.root.key";
 ```
 systemctl restart named
 ```
-### Step.9 To resolve the domain www.mypage.com to its IP address using the system’s current DNS settings.
-```
-nslookup www.mypage.com
-```
-#### if output will be like this 
+### Step.9 To resolve the domain www.mypage.com to its IP address using the system’s current DNS setting.
 ```
  nslookup www.mypage.com
 ```
+#### if output will be like this 
 #### Output
+```
 Server:         172.31.0.2
 Address:        172.31.0.2#53
 
@@ -167,14 +165,19 @@ Address: 3.33.130.190
 ### Step.10 Open main configuration file for DNS name resolution.
 #### path /etc/resolv.conf
 ```
+nano /etc/resolv.conf
+```
+```
 nameserver 127.0.0.1  # loopback address or localhost
 ```
 ```
 nslookup www.mypage.com
 ```
 #### Output
+```
 Server:         127.0.0.1
 Address:        127.0.0.1#53
 
 Name:   www.mypage.com
 Address: 35.171.8.231
+```

@@ -1,16 +1,16 @@
 # Domain Name System (DNS) by Mohit Soni (mohitsoniv)
-## - Apache setup with Coustom Domain on Amazon Linux
-### Step.1 Installing and enable httpd on linux machine.
+## - Apache setup with Coustom Domain on Ubuntu
+### Step.1 Installing and enable Apach2 on Ubuntu.
 ```
-yum update
-yum install httpd -y
-systemctl enable httpd.service
-systemctl start httpd.service
-systemctl status httpd.service
+apt-get updat
+apt-get install apache2 -y
+systemctl enable apach2
+systemctl start apach2
+systemctl status apach2
 ```
 ### Step.2 Installing Firewall.
 ```
-yum install firewalld -y
+apt-get install firewalld -y
 systemctl enable firewalld
 systemctl start firewalld
 systemctl status firewalld
@@ -23,10 +23,10 @@ firewall-cmd --reload
 ### Step.3 Install Bind.
 BIND, standing for Berkeley Internet Name Domain, is a widely used software suite for managing the Domain Name System (DNS). It's essentially the DNS server software that translates human-readable domain names (like google.com) into the numerical IP addresses that computers use to communicate.
 ```
-yum install bind -y
-systemctl enable named
-systemctl start named
-systemctl status named
+apt install bind9 bind9utils bind9-doc dnsutils -y
+sudo systemctl enable bind9
+sudo systemctl start bind9
+sudo systemctl status bind9
 ```
 ### Step.4 Configure DNS with firewall.
 ```
@@ -39,23 +39,30 @@ firewall-cmd --reload
 ```
 curl ifconfig.me 
 ```
-#### path: /var/named/filename
+#### Create Zones directory at /etc/bind/zones
 ```
-nano /var/named/mypage.com.fzone
+mkdir zones
+```
+#### path: /etc/bind/zones/filename
+```
+nano /etc/bind/zones/filename
 ```
 ```
-$TTL 2d    ; default TTL for zone
+$TTL 604800
+@   IN  SOA ns1.mypage.com. admin.mypage.com. (
+        2025051901 ; Serial
+        604800     ; Refresh
+        86400      ; Retry
+        2419200    ; Expire
+        604800 )   ; Negative Cache TTL
 
-@         IN      SOA   ns1.example.com. hostmaster.example.com. (
-                                800 ; serial number
-                                12h        ; refresh
-                                15m        ; update retry
-                                4d         ; expiry
-                                2h         ; minimum
-                                )
-; name server RR for the domain
-           IN      NS      ns1.example.com.
-www        IN      A       your public ip
+; Name servers
+    IN  NS  ns1.mypage.com.
+
+; A records
+@       IN  A   public ip   
+ns1     IN  A   public ip     
+www     IN  A   public ip    
 ```
 ### Step.6  Configure private ip and domain name in named.conf file.
 #### Private IP on linux
@@ -67,74 +74,22 @@ or
 ip addr show
 ```
 ```
-nano /./etc/named.conf
+nano /etc/bind/named.conf.local
 ```
 ```
 //
-// named.conf
-//
-// Provided by Red Hat bind package to configure the ISC BIND named(8) DNS
-// server as a caching only nameserver (as a localhost DNS resolver only).
-//
-// See /usr/share/doc/bind*/sample/ for example named configuration files.
+// Do any local configuration here
 //
 
-options {
-        listen-on port 53 { 127.0.0.1; add private ip; };
-        listen-on-v6 port 53 { ::1; };
-        directory       "/var/named";
-        dump-file       "/var/named/data/cache_dump.db";
-        statistics-file "/var/named/data/named_stats.txt";
-        memstatistics-file "/var/named/data/named_mem_stats.txt";
-        secroots-file   "/var/named/data/named.secroots";
-        recursing-file  "/var/named/data/named.recursing";
-        allow-query     { localhost; };
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
 
-        /* 
-         - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
-         - If you are building a RECURSIVE (caching) DNS server, you need to enable 
-           recursion. 
-         - If your recursive DNS server has a public IP address, you MUST enable access 
-           control to limit queries to your legitimate users. Failing to do so will
-           cause your server to become part of large scale DNS amplification 
-           attacks. Implementing BCP38 within your network would greatly
-           reduce such attack surface 
-        */
-        recursion yes;
-
-        dnssec-validation yes;
-
-        managed-keys-directory "/var/named/dynamic";
-        geoip-directory "/usr/share/GeoIP";
-
-        pid-file "/run/named/named.pid";
-        session-keyfile "/run/named/session.key";
-
-        /* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
-        include "/etc/crypto-policies/back-ends/bind.config";
+zone "mypage.com" {
+    type master;
+    file "/etc/bind/zones/mypage.com.fzone";
 };
 
-logging {
-        channel default_debug {
-                file "data/named.run";
-                severity dynamic;
-        };
-};
-
-zone "." IN {
-        type hint;
-        file "named.ca";
-};
-
-zone "mypage.com" IN {
-        type master;
-        file "mypage.com.fzone";
-        allow-query {any;};
-
-};
-
-include "/etc/named.rfc1912.zones";
-include "/etc/named.root.key";
 ```
 ### Step.7 Validate your DNS zone file (mypage.com.fzone) for the domain mypage.com.
 ```
@@ -142,7 +97,7 @@ include "/etc/named.root.key";
 ```
 ### Step.8 Restart Bind 
 ```
-systemctl restart named
+systemctl restart bind9
 ```
 ### Step.9 To resolve the domain www.mypage.com to its IP address using the system’s current DNS setting.
 ```

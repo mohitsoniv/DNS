@@ -43,7 +43,7 @@ curl ifconfig.me
 ```
 mkdir zones
 ```
-#### path: /etc/bind/zones/filename
+#### path: /etc/bind/zones/mypage.com.fzone
 ```
 nano /etc/bind/zones/filename
 ```

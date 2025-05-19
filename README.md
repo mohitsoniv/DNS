@@ -1,5 +1,5 @@
 # Domain Name System (DNS) by Mohit Soni (mohitsoniv)
-## - Apache setup with Coustom Domain
+## - Apache setup with Coustom Domain on Amazon Linux
 ### Step.1 Installing and enable httpd on linux machine.
 ```
 yum update
